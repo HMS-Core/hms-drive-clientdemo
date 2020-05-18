@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Huawei Drive</string>
+    <string name="str_copyright" priority="translator">"版权所有 © 华为软件技术有限公司 保留一切权利"</string>
+    <string name="log_in">登录华为账号</string>
+    <string name="recent" priority="translator">"接口"</string>
+    <string name="categoryfile" priority="LT">"报文"</string>
+
+
+    <string name="send" priority="LT">发送</string>
+    <string name="reset">重置</string>
+
+    <string name="netdisk_recently_deleted" priority="translator">"最近删除"</string>
+    <string name="netdisk_move_state_recycle_unenable" priority="translator">"无法移动文件至最近删除目录"</string>
+    <string name="recovery" priority="translator">"恢复"</string>
+    <plurals name="recycle_permanently_remove_select_file">
+        <item quantity="one">"是否彻底删除所选 %d 项文件？"</item>
+        <item quantity="zero">"是否彻底删除所选 %d 项文件？"</item>
+        <item quantity="two">"是否彻底删除所选 %d 项文件？"</item>
+        <item quantity="few">"是否彻底删除所选 %d 项文件？"</item>
+        <item quantity="many">"是否彻底删除所选 %d 项文件？"</item>
+        <item priority="LT" quantity="other">"是否彻底删除 %d 项文件？"</item>
+    </plurals>
+    <string name="recycle_remove_completely" priority="LT">"彻底删除"</string>
+
+    <string name="recycle_delete_time" priority="LT">"删除时间："</string>
+    <string name="strongbox_original_path" priority="translator">"原始路径："</string>
+    <string name="details_panel_title" priority="translator">"详情"</string>
+    <string name="details_folder_name" priority="translator">"文件夹名称："</string>
+    <string name="folder_info_include" priority="translator">"包括："</string>
+    <string name="details_file_name" priority="translator">"文件名称："</string>
+    <string name="file_info_size" priority="translator">"文件大小："</string>
+    <string name="recycle_reduction" priority="LT">"还原"</string>
+
+    <string name="start_new_watch" priority="LT">开始新监听</string>
+    <string name="list_changes" priority="LT">查看更新列表</string>
+    <string name="netdisk_appdata" priority="LT">我的应用</string>
+</resources>
