@@ -4,10 +4,10 @@
 ## Table of Contents
 
  * [Introduction](#introduction)
- * [Getting Started](#Getting Started)
+ * [Getting Started](#Getting-Started)
  * [Configuration ](#configuration )
  * [Supported Environments](#supported-environments)
- * [Sample Code](# Sample Code)
+ * [Sample Code](#Sample-Code)
  * [License](#license)
 
 
