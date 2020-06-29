@@ -1,11 +1,14 @@
-## HUAWEI DriveKitSDK-Java-sample
+## hms drive clientdemo
 
+[![License](https://img.shields.io/badge/Docs-hmsguides-brightgreen)](https://developer.huawei.com/consumer/cn/doc/development/HMS-Guides/drivekit-introduction)
+
+![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
 
 ## Table of Contents
 
  * [Introduction](#introduction)
  * [Getting Started](#Getting-Started)
- * [Configuration ](#configuration )
+ * [Configuration](#configuration )
  * [Supported Environments](#supported-environments)
  * [Sample Code](#Sample-Code)
  * [License](#license)
@@ -17,6 +20,8 @@
  
  app:   Sample code packages.   
  
+ <img src="driveDemo.jpeg" width=250 title="ID Photo DIY" div align=center border=5>
+
 ## Getting Started    
  For more development details, please refer to the following link:   
  https://developer.huawei.com/consumer/en/doc/development/HMS-Guides/drivekit-introduction   
@@ -31,11 +36,6 @@
  3. In Android Studio, select "File"->"Open". In the pop-up dialog box, enter the path where the sample code is stored locally, for example: "D:\HuaweiDriveSDK\samples\HuaweiDriveSample-4.0.3.300";
  4. Select the HuaweiDriveSample project to be opened, and then click "OK". In the pop-up dialog box, select "New Window" to open the project in a new window.  
  5. In Android Studio, click "Run", then select your device as the target and click "OK" to launch the sample application on your device.  
-
-
-## Supported Environments   
- Java 1.8 or a later version is recommended.  
- Android Studio 3.2 version or a later version is recommended.   
  
 ## Configuration
  To use functions provided by packages in examples, you do not need to set any related parameters in build.gradle and agconnect-services.json in the app package   
@@ -43,6 +43,10 @@
  
  applicationId: ID of the application registered on the HUAWEI Developer.   
  app_id: App ID, which is obtained from app information.
+ 
+## Supported Environments   
+ Java 1.8 or a later version is recommended.  
+ Android Studio 3.2 version or a later version is recommended.   
  
 ## Sample Code  
  
