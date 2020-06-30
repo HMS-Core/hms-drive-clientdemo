@@ -26,7 +26,7 @@
 
  Before using HUAWEI Drive Kit SDK sample code, check whether the JAVA environment has been installed.    
  
- Decompress the sample code package "HuaweiDriveSample-4.0.3.300.zip".    
+ Clone the sample code to local.    
  Take the Android Studio 3.2 version as an example. The steps to run the Drive service sample code are as follows:    
  1. You should create an app in AppGallery Connect, and obtain the file of agconnect-services.json and add to the project.   
  2. You should also generate a signing certificate fingerprint and add the certificate file to the project, and add configuration to build.gradle.   
