@@ -13,7 +13,7 @@
 
 
 ## Introduction   
- This sample code encapsulates APIs of the HUAWEI Drive Kit SDK. It provides many sample programs for your reference or usage.    
+ This sample code encapsulates APIs of the HUAWEI Drive Kit SDK. It provides many sample programs for your reference or usage. You will learn how to use Drive Kit SDK.   
  The following describes packages of Java sample code.   
  
  app:   Sample code packages.   
