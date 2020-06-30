@@ -18,7 +18,6 @@
  
  app:   Sample code packages.   
  
- <img src="driveDemo.jpeg" width=250 title="ID Photo DIY" div align=center border=5>
 
 ## Getting Started    
  For more development details, please refer to the following link:   
