@@ -1,6 +1,8 @@
 # 华为云空间服务客户端示例代码
 
 [![License](https://img.shields.io/badge/Docs-hmsguides-brightgreen)](https://developer.huawei.com/consumer/cn/doc/development/HMS-Guides/drivekit-introduction)  ![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
+  
+中文 | [English](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/README.md)
 
 ## Table of Contents
 
