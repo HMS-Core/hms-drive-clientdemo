@@ -7,10 +7,10 @@ English | [中文](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/
 ## Table of Contents
 
  * [Introduction](#introduction)
- * [Getting Started](#Getting-Started)
+ * [Getting Started](#getting-started)
  * [Configuration](#configuration )
  * [Supported Environments](#supported-environments)
- * [Sample Code](#Sample-Code)
+ * [Sample Code](#sample-code)
  * [License](#license)
 
 
@@ -60,6 +60,13 @@ English | [中文](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/
     Before calling COMMENTS.GET, you need to call COMMENTS.CREATE.    
     Before calling Replies.CREATE, you need to call COMMENTS.CREATE.    
 
- 
+## Question or issues
+If you have questions about how to use HMS samples, try the following options:
+- [Stack Overflow](https://stackoverflow.com/questions/tagged/huawei-mobile-services) is the best place for any programming questions. Be sure to tag your question with 
+**huawei-mobile-services**.
+- [Huawei Developer Forum](https://forums.developer.huawei.com/forumPortal/en/home?fid=0101187876626530001) HMS Core Module is great for general questions, or seeking recommendations and opinions.
+
+If you run into a bug in our samples, please submit an [issue](https://github.com/HMS-Core/hms-drive-clientdemo/issues) to the Repository. Even better you can submit a [Pull Request](https://github.com/HMS-Core/hms-drive-clientdemo/pulls) with a fix.
+
 ## License
  DriveKit SDK sample is licensed under the [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0).  
