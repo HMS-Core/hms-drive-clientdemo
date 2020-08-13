@@ -5,23 +5,23 @@ android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     defaultConfig {
-        applicationId "com.huawei.cloud.drive"
+        applicationId "your package name"
         minSdkVersion 22
         targetSdkVersion 26
         versionCode 10000300
-        versionName "1.0"
+        versionName "1.0.0.300"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
         debug {
-            storeFile file('******')
+            storeFile file('******.jks')
             keyAlias '******'
             keyPassword '******'
             storePassword '******'
             v2SigningEnabled false
         }
         release {
-            storeFile file('******')
+            storeFile file('******.jks')
             keyAlias '******'
             keyPassword '******'
             storePassword '******'
@@ -40,7 +40,7 @@ android {
 
 repositories {
     flatDir {
-        dirs 'lib'
+        dirs 'libs'
     }
 }
 
@@ -50,7 +50,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 
-    implementation 'com.huawei.hms:drive:4.0.3.300'
+    implementation 'com.huawei.hms:drive:5.0.0.300'
     implementation 'com.huawei.hms:hwid:4.0.1.300'
     implementation 'com.huawei.hms:push:4.0.3.300'
 

@@ -16,6 +16,8 @@
 
 package com.huawei.cloud.drive.fragment;
 
+import static com.huawei.cloud.drive.constants.MimeType.mimeType;
+
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.ActivityNotFoundException;
@@ -38,13 +40,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.huawei.cloud.base.http.FileContent;
 import com.huawei.cloud.base.media.MediaHttpDownloader;
+import com.huawei.cloud.base.media.MediaHttpDownloaderProgressListener;
 import com.huawei.cloud.base.util.DateTime;
 import com.huawei.cloud.base.util.StringUtils;
 import com.huawei.cloud.base.util.base64.Base64;
 import com.huawei.cloud.client.util.CommonUtil;
+import com.huawei.cloud.drive.view.activity.WebViewActivity;
 import com.huawei.cloud.services.drive.Drive;
 import com.huawei.cloud.services.drive.model.About;
 import com.huawei.cloud.services.drive.model.Change;
@@ -54,13 +59,14 @@ import com.huawei.cloud.services.drive.model.Comment;
 import com.huawei.cloud.services.drive.model.CommentList;
 import com.huawei.cloud.services.drive.model.File;
 import com.huawei.cloud.services.drive.model.FileList;
+import com.huawei.cloud.services.drive.model.HistoryVersion;
+import com.huawei.cloud.services.drive.model.HistoryVersionList;
 import com.huawei.cloud.services.drive.model.Permission;
 import com.huawei.cloud.services.drive.model.PermissionList;
 import com.huawei.cloud.services.drive.model.Reply;
 import com.huawei.cloud.services.drive.model.ReplyList;
 import com.huawei.cloud.services.drive.model.StartCursor;
 
-import com.huawei.cloud.drive.constants.MimeType;
 import com.huawei.cloud.drive.hms.CredentialManager;
 import com.huawei.cloud.drive.utils.thumbnail.ThumbnailUtilsImage;
 import com.huawei.cloud.drive.hms.HmsProxyImpl;
@@ -68,9 +74,15 @@ import com.huawei.cloud.drive.log.Logger;
 import com.huawei.cloud.drive.task.task.DriveTask;
 import com.huawei.cloud.drive.task.task.TaskManager;
 import com.huawei.hicloud.drive.R;
+import com.huawei.hms.utils.StringUtil;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -89,6 +101,13 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
     private static final String TAG = "InterfaceFragment";
 
     private static final String FILENAME = "IMG_20190712_155412.jpg";
+
+    private static final String DOCXFILE = "test.docx";
+
+    /**
+     * 在线预览/编辑文档的时候，退出webview界面，刷新文件列表界面
+     */
+    public static final int WEB_VIEW_BACK_REFRESH = 5201;
 
     private static final long DIRECT_UPLOAD_MAX_SIZE = 20 * 1024 * 1024;
 
@@ -109,11 +128,17 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
     // Context
     private Context context;
 
+    private HistoryVersion mHistoryVersion;
+
+    private HistoryVersion deleteHistoryVersions;
+
     // Used to cache metadata information after the folder is created successfully.
     private File mDirectory;
 
     // Used to cache metadata information after successful file creation
     private File mFile;
+
+    private File mBackupFile;
 
     // Used to cache metadata information after the Comment is created successfully.
     private Comment mComment;
@@ -127,8 +152,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
     @SuppressLint("NewApi")
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-        @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.recent_fragment, container, false);
         context = getContext();
         setHasOptionsMenu(true);
@@ -216,6 +240,20 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             executeCommentsUpdate();
         } else if (id == R.id.drive_comments_delete) {
             executeCommentsDelete();
+        } else if (id == R.id.drive_historyversions_delete) {
+            executeHistoryVersionsDelete();
+        } else if (id == R.id.drive_historyversions_get) {
+            executeHistoryVersionsGet();
+        } else if (id == R.id.drive_historyversions_list) {
+            executeHistoryVersionsList();
+        } else if (id == R.id.drive_historyversions_update) {
+            executeHistoryVersionsUpdate();
+        } else if (id == R.id.drive_backup_btn) {
+            executeDataBackUp();
+        } else if (id == R.id.drive_restore_btn) {
+            executeDataRestore();
+        } else if (id == R.id.drive_online_open_btn) {
+            executeOnlineOpen();
         }
     }
 
@@ -229,6 +267,36 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             FileOutputStream outputStream = new FileOutputStream(new java.io.File(cachePath + "/cache.jpg"));
             byte[] buffer = new byte[1024];
             int byteCount = 0;
+            while ((byteCount = in.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, byteCount);
+            }
+            outputStream.flush();
+            outputStream.close();
+            in.close();
+
+            in = context.getAssets().open(DOCXFILE);
+            outputStream = new FileOutputStream(new java.io.File(cachePath + "/test.docx"));
+            byte[] buf = new byte[1024];
+            while ((byteCount = in.read(buf)) != -1) {
+                outputStream.write(buffer, 0, byteCount);
+            }
+            outputStream.flush();
+            outputStream.close();
+            in.close();
+
+            String BackFileName = "AppDataBackUpFileName.jpg";
+            in = context.getAssets().open(FILENAME);
+            outputStream = new FileOutputStream(new java.io.File("/sdcard/" + BackFileName));
+            while ((byteCount = in.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, byteCount);
+            }
+            outputStream.flush();
+            outputStream.close();
+            in.close();
+
+            String accountFile = "account.json";
+            in = context.getAssets().open(accountFile);
+            outputStream = new FileOutputStream(new java.io.File(cachePath +"/"+ accountFile));
             while ((byteCount = in.read(buffer)) != -1) {
                 outputStream.write(buffer, 0, byteCount);
             }
@@ -333,6 +401,27 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
 
         Button commentsDeleteButton = mView.findViewById(R.id.drive_comments_delete);
         commentsDeleteButton.setOnClickListener(this);
+
+        Button historyVersionsDeleteButton = mView.findViewById(R.id.drive_historyversions_delete);
+        historyVersionsDeleteButton.setOnClickListener(this);
+
+        Button historyVersionsGetButton = mView.findViewById(R.id.drive_historyversions_get);
+        historyVersionsGetButton.setOnClickListener(this);
+
+        Button historyVersionsListButton = mView.findViewById(R.id.drive_historyversions_list);
+        historyVersionsListButton.setOnClickListener(this);
+
+        Button historyVersionsUpdateButton = mView.findViewById(R.id.drive_historyversions_update);
+        historyVersionsUpdateButton.setOnClickListener(this);
+
+        Button backUpButton = mView.findViewById(R.id.drive_backup_btn);
+        backUpButton.setOnClickListener(this);
+
+        Button restoreButton = mView.findViewById(R.id.drive_restore_btn);
+        restoreButton.setOnClickListener(this);
+
+        Button onlineOpenButton = mView.findViewById(R.id.drive_online_open_btn);
+        onlineOpenButton.setOnClickListener(this);
     }
 
     /**
@@ -494,8 +583,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             }
             // get child files of a folder
             String directoryId = folders.get(0).getId();
-            String queryStr = "'" + directoryId
-                + "' in parentFolder and mimeType != 'application/vnd.huawei-apps.folder'";
+            String queryStr = "'" + directoryId + "' in parentFolder and mimeType != 'application/vnd.huawei-apps.folder'";
             List<File> files = getFileList(queryStr, "fileName", 10, "*");
             Logger.i(TAG, "executeFilesList: files size = " + files.size());
             sendHandleMessage(R.id.drive_files_button_list, SUCCESS);
@@ -520,11 +608,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         String pageToken = null;
         List<File> fileList = new ArrayList<>();
         do {
-            FileList result = request.setQueryParam(query)
-                .setOrderBy(orderBy)
-                .setPageSize(pageSize)
-                .setFields(fields)
-                .execute();
+            FileList result = request.setQueryParam(query).setOrderBy(orderBy).setPageSize(pageSize).setFields(fields).execute();
             for (File file : result.getFiles()) {
                 fileList.add(file);
             }
@@ -636,10 +720,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
 
             Drive drive = buildDrive();
             File updateFile = new File();
-            updateFile.setFileName(file.getFileName() + "_update")
-                .setMimeType("application/vnd.huawei-apps.folder")
-                .setDescription("update folder")
-                .setFavorite(true);
+            updateFile.setFileName(file.getFileName() + "_update").setMimeType("application/vnd.huawei-apps.folder").setDescription("update folder").setFavorite(true);
             file = drive.files().update(file.getId(), updateFile).execute();
 
             Logger.i(TAG, "updateFile result: " + file.toString());
@@ -666,7 +747,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         public void call() {
             String fileName = context.getExternalCacheDir().getAbsolutePath() + "/cache.jpg";
             byte[] thumbnailImageBuffer = getThumbnailImage(fileName);
-            String type = MimeType.mimeType(".jpg");
+            String type = mimeType(".jpg");
             if (mDirectory == null) {
                 Logger.e(TAG, "executeFilesCreateFile error, need to create Directory.");
                 sendHandleMessage(R.id.drive_files_button_createfile, FAIL);
@@ -692,7 +773,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             }
 
             java.io.File io = new java.io.File(filePath);
-            FileContent fileContent = new FileContent(MimeType.mimeType(io), io);
+            FileContent fileContent = new FileContent(mimeType(io), io);
 
             // set thumbnail , If it is not a media file, you do not need a thumbnail.
             File.ContentExtras contentPlus = new File.ContentExtras();
@@ -701,10 +782,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             thumbnail.setMimeType(thumbnailMimeType);
             contentPlus.setThumbnail(thumbnail);
 
-            File content = new File().setFileName(io.getName())
-                .setMimeType(MimeType.mimeType(io))
-                .setParentFolder(Collections.singletonList(parentId))
-                .setContentExtras(contentPlus);
+            File content = new File().setFileName(io.getName()).setMimeType(mimeType(io)).setParentFolder(Collections.singletonList(parentId)).setContentExtras(contentPlus);
 
             Drive drive = buildDrive();
             Drive.Files.Create rquest = drive.files().create(content, fileContent);
@@ -790,6 +868,13 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
                 isDirectDownload = true;
             }
             downloader.setContentRange(0, size - 1).setDirectDownloadEnabled(isDirectDownload);
+            downloader.setProgressListener(new MediaHttpDownloaderProgressListener() {
+                @Override
+                public void progressChanged(MediaHttpDownloader mediaHttpDownloader) throws IOException {
+                    // The download subthread invokes this method to process the download progress.
+                    double progress = mediaHttpDownloader.getProgress();
+                }
+            });
             java.io.File f = new java.io.File(imagePath + "download.jpg");
             get.executeContentAndDownloadTo(new FileOutputStream(f));
 
@@ -818,10 +903,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             try {
                 Drive drive = buildDrive();
                 Drive.Files.List fileListReq = drive.files().list();
-                fileListReq.setQueryParam("mimeType = 'application/vnd.huawei-apps.folder'")
-                    .setOrderBy("name")
-                    .setPageSize(100)
-                    .setFields("*");
+                fileListReq.setQueryParam("mimeType = 'application/vnd.huawei-apps.folder'").setOrderBy("name").setPageSize(100).setFields("*");
                 FileList fileList = fileListReq.execute();
                 ArrayList<String> dstDir = getParentsId(fileList);
                 Logger.e(TAG, "copyFile Source File Sharded Status: " + mFile.getHasShared());
@@ -962,13 +1044,10 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             Drive drive = buildDrive();
             File content = new File();
 
-            content.setFileName(oldFile.getFileName() + "_update")
-                .setMimeType(MimeType.mimeType(".jpg"))
-                .setDescription("update image")
-                .setFavorite(true);
+            content.setFileName(oldFile.getFileName() + "_update").setMimeType(mimeType(".jpg")).setDescription("update image").setFavorite(true);
 
             java.io.File io = new java.io.File(newFilePath);
-            FileContent fileContent = new FileContent(MimeType.mimeType(io), io);
+            FileContent fileContent = new FileContent(mimeType(io), io);
             Drive.Files.Update request = drive.files().update(oldFile.getId(), content, fileContent);
             boolean isDirectUpload = false;
             if (io.length() < DIRECT_UPLOAD_MAX_SIZE) {
@@ -1392,8 +1471,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         try {
             Drive.Replies.Get request = drive.replies().get(fileId, commentId, replyId).setFields("*");
             Reply reply = request.execute();
-            Logger.i(TAG,
-                "get reply :" + reply.getDescription() + ", " + reply.getCreatedTime() + ", " + reply.getCreator());
+            Logger.i(TAG, "get reply :" + reply.getDescription() + ", " + reply.getCreatedTime() + ", " + reply.getCreator());
             sendHandleMessage(R.id.drive_replies_get, SUCCESS);
             return reply;
         } catch (IOException e) {
@@ -1438,12 +1516,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             Reply latestReply = new Reply();
             latestReply.setDescription("update a reply");
             // update reply
-            Drive.Replies.Update update_request = drive.replies()
-                .update(fileId, commentId, replyId, latestReply)
-                .setFields("*");
+            Drive.Replies.Update update_request = drive.replies().update(fileId, commentId, replyId, latestReply).setFields("*");
             mReply = update_request.execute();
-            Logger.i(TAG,
-                "get reply :" + mReply.getDescription() + ", " + mReply.getEditedTime() + ", " + mReply.getCreator());
+            Logger.i(TAG, "get reply :" + mReply.getDescription() + ", " + mReply.getEditedTime() + ", " + mReply.getCreator());
 
             sendHandleMessage(R.id.drive_replies_update, SUCCESS);
         } catch (IOException e) {
@@ -1551,7 +1626,12 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         @Override
         public void call() {
             if (mFile != null) {
-                listComments(mFile.getId());
+                List<Comment> list = listComments(mFile.getId());
+                if (list != null) {
+                    sendHandleMessage(R.id.drive_comments_list, SUCCESS);
+                } else {
+                    sendHandleMessage(R.id.drive_comments_list, FAIL);
+                }
             } else {
                 sendHandleMessage(R.id.drive_comments_list, FAIL);
                 Logger.e(TAG, "comment list error: args wrong");
@@ -1584,10 +1664,8 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
                 nextCursor = commentList.getNextCursor();
             } while (!StringUtils.isNullOrEmpty(nextCursor));
             Logger.i(TAG, "comments size " + commentArrayList.size());
-            sendHandleMessage(R.id.drive_comments_list, SUCCESS);
             return commentArrayList;
         } catch (IOException e) {
-            sendHandleMessage(R.id.drive_comments_list, FAIL);
             Logger.e(TAG, "comments list error: " + e.toString());
             return null;
         }
@@ -1729,6 +1807,343 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         } catch (IOException e) {
             sendHandleMessage(R.id.drive_comments_delete, FAIL);
             Logger.e(TAG, "comment delete error: " + e.toString());
+        }
+    }
+
+    /**
+     * delete a history version
+     */
+    private void executeHistoryVersionsDelete() {
+        TaskManager.getInstance().execute(new HistoryVersionsDeleteTask());
+    }
+
+    private class HistoryVersionsDeleteTask extends DriveTask {
+        @Override
+        public void call() {
+            if (mFile != null && deleteHistoryVersions != null) {
+                deleteHistoryVersions(mFile.getId(), deleteHistoryVersions.getId());
+            } else {
+                Logger.e(TAG, "mHistoryVersion is null or mFile is null.");
+                sendHandleMessage(R.id.drive_historyversions_delete, FAIL);
+            }
+        }
+    }
+
+    private void deleteHistoryVersions(String fileId, String historyVersionId) {
+        Drive drive = buildDrive();
+        if (drive == null) {
+            Logger.e(TAG, "deleteHistoryVersions error: drive is null.");
+            sendHandleMessage(R.id.drive_historyversions_delete, FAIL);
+            return;
+        }
+        try {
+            drive.historyVersions().delete(fileId, historyVersionId).execute();
+            sendHandleMessage(R.id.drive_historyversions_delete, SUCCESS);
+        } catch (Exception ex) {
+            sendHandleMessage(R.id.drive_historyversions_delete, FAIL);
+            Logger.e(TAG, "deleteHistoryVersions error: " + ex.toString());
+        }
+    }
+
+    /**
+     * get a history version
+     */
+    private void executeHistoryVersionsGet() {
+        TaskManager.getInstance().execute(new HistoryVersionsGetTask());
+    }
+
+    private class HistoryVersionsGetTask extends DriveTask {
+        @Override
+        public void call() {
+            HistoryVersion temp;
+            if (mFile != null && mHistoryVersion != null) {
+                temp = getHistoryVersions(mFile.getId(), mHistoryVersion.getId());
+            } else {
+                Logger.e(TAG, "mHistoryVersion is null or mFile is null.");
+                sendHandleMessage(R.id.drive_historyversions_get, FAIL);
+                return;
+            }
+            if (temp == null) {
+                sendHandleMessage(R.id.drive_historyversions_get, FAIL);
+                return;
+            }
+            sendHandleMessage(R.id.drive_historyversions_get, SUCCESS);
+        }
+    }
+
+    private HistoryVersion getHistoryVersions(String fileId, String historyVersionId) {
+        Drive drive = buildDrive();
+        if (drive == null) {
+            Logger.e(TAG, "getHistoryVersions error: drive is null.");
+            return null;
+        }
+        HistoryVersion historyVersion = null;
+        try {
+            historyVersion = drive.historyVersions().get(fileId, historyVersionId).execute();
+        } catch (Exception ex) {
+            Logger.e(TAG, "getHistoryVersions error: " + ex.toString());
+        }
+        return historyVersion;
+    }
+
+    private void executeHistoryVersionsList() {
+        TaskManager.getInstance().execute(new HistoryVersionsListTask());
+    }
+
+    private class HistoryVersionsListTask extends DriveTask {
+        @Override
+        public void call() {
+            HistoryVersionList historyVersionList;
+            if (mFile != null) {
+                historyVersionList = listHistoryVersions(mFile.getId());
+            } else {
+                Logger.e(TAG, "mFile is null.");
+                sendHandleMessage(R.id.drive_historyversions_list, FAIL);
+                return;
+            }
+            if (historyVersionList != null) {
+                Logger.e(TAG, "historyVersionList size " + historyVersionList.getHistoryVersions().size());
+                if (historyVersionList.getHistoryVersions().size() > 0) {
+                    mHistoryVersion = historyVersionList.getHistoryVersions().get(0);
+                }
+                if (historyVersionList.getHistoryVersions().size() > 1) {
+                    deleteHistoryVersions = historyVersionList.getHistoryVersions().get(1);;
+                }
+                sendHandleMessage(R.id.drive_historyversions_list, SUCCESS);
+            } else {
+                sendHandleMessage(R.id.drive_historyversions_list, FAIL);
+            }
+        }
+
+        /**
+         * list all history versions
+         * @param fileId file ID
+         * @return HistoryVersionList
+         */
+        private HistoryVersionList listHistoryVersions(String fileId) {
+            Drive drive = buildDrive();
+            HistoryVersionList historyVersionList = null;
+            if (drive == null) {
+                Logger.e(TAG, "listHistoryVersions error: drive is null.");
+                return null;
+            }
+            try {
+                historyVersionList = drive.historyVersions().list(fileId).execute();
+            } catch (Exception ex) {
+                Logger.e(TAG, "listHistoryVersions error: " + ex.toString());
+            }
+            return historyVersionList;
+        }
+    }
+
+    private void executeHistoryVersionsUpdate() {
+        TaskManager.getInstance().execute(new HistoryVersionsUpdateTask());
+    }
+
+    private class HistoryVersionsUpdateTask extends DriveTask {
+
+        @Override
+        public void call() {
+            if (mFile != null && mHistoryVersion != null) {
+                updateHistoryVersions(mFile.getId(), mHistoryVersion);
+            } else {
+                Logger.e(TAG, "mFile is null or mHistoryVersion is null");
+                sendHandleMessage(R.id.drive_historyversions_update, FAIL);
+            }
+        }
+    }
+
+    /**
+     * update one history versions
+     */
+    private void updateHistoryVersions(String fileId, HistoryVersion oldHistoryVersion) {
+        Drive drive = buildDrive();
+        if (drive == null) {
+            Log.e(TAG, "updateHistoryVersions error: drive is null.");
+            sendHandleMessage(R.id.drive_historyversions_update, FAIL);
+            return;
+        }
+        if (oldHistoryVersion == null) {
+            Log.e(TAG, "updateHistoryVersions error: oldHistoryVersion is null.");
+            sendHandleMessage(R.id.drive_historyversions_update, FAIL);
+            return;
+        }
+        try {
+            // Modify whatever you want
+            HistoryVersion historyVersion = new HistoryVersion();
+            historyVersion.setKeepPermanent(!oldHistoryVersion.getKeepPermanent());
+            drive.historyVersions().update(fileId, oldHistoryVersion.getId(), historyVersion).execute();
+            sendHandleMessage(R.id.drive_historyversions_update, SUCCESS);
+        } catch (Exception ex) {
+            sendHandleMessage(R.id.drive_historyversions_update, FAIL);
+            Log.e(TAG, "updateHistoryVersions error: " + ex.toString());
+        }
+    }
+
+    private void executeDataBackUp() {
+        TaskManager.getInstance().execute(new DataBackUpTask());
+    }
+
+    private class DataBackUpTask extends DriveTask {
+        @Override
+        public void call() {
+            doBackUpData();
+        }
+    }
+
+    /**
+     * Assume that the application data file is AppDataBackUpFileName.jpg.
+     * Application data backup is to upload the AppDataBackUpFileName.jpg file to the application data directory on the cloud disk.
+     */
+    private void doBackUpData() {
+        try {
+            Drive drive = buildDrive();
+            String BackFileName = "AppDataBackUpFileName.jpg";
+            String personalBackUpFolder = "AppName";
+            java.io.File fileObject = new java.io.File("/sdcard/" + BackFileName);
+            Map<String, String> appProperties = new HashMap<>();
+            // 1. create backup folder under folder "applicationData" first
+            appProperties.put("appProperties", "property");
+            File file = new File();
+            file.setFileName(personalBackUpFolder + System.currentTimeMillis())
+                .setMimeType("application/vnd.huawei-apps.folder")
+                .setAppSettings(appProperties)
+                .setParentFolder(Collections.singletonList("applicationData"));
+            File directoryCreated = drive.files().create(file).execute();
+
+            // 2. backUp: upload file "AppDatabackUpFileName"
+            String mimeType = mimeType(fileObject);
+            File content = new File();
+            content.setFileName(fileObject.getName()).setMimeType(mimeType).setParentFolder(Collections.singletonList(directoryCreated.getId()));
+            mBackupFile = drive.files().create(content, new FileContent(mimeType, fileObject)).setFields("*").execute();
+            sendHandleMessage(R.id.drive_backup_btn, SUCCESS);
+        } catch (IOException e) {
+            sendHandleMessage(R.id.drive_backup_btn, FAIL);
+            Logger.e(TAG, "BackUpData error: " + e.toString());
+        }
+    }
+
+    private void executeDataRestore() {
+        TaskManager.getInstance().execute(new DataRestoreTask());
+    }
+
+    private class DataRestoreTask extends DriveTask {
+        @Override
+        public void call() {
+            if (mBackupFile != null) {
+                doRestoreData();
+            } else {
+                Logger.e(TAG, "mBackUpFile is null");
+                sendHandleMessage(R.id.drive_backup_btn, FAIL);
+            }
+        }
+    }
+
+    /**
+     * restore file named "AppDataBackUpFileName"
+     */
+    private void doRestoreData() {
+        Drive drive = buildDrive();
+        String searchFileName = "AppDataBackUpFileName.jpg";
+        // must set containers as "applicationData" if we want list the backUp files
+        String containers = "applicationData";
+        String queryFile = "fileName = '" + searchFileName + "' and mimeType != 'application/vnd.huawei-apps.folder'";
+        try {
+            // 1. list all back files
+            Drive.Files.List request = drive.files().list();
+            FileList files;
+            List<File> backupFiles = new ArrayList<>();
+            while (true) {
+                files = request.setQueryParam(queryFile).setPageSize(10).setOrderBy("fileName").setFields("category,nextCursor,files/id,files/fileName,files/size").setContainers(containers).execute();
+                if (files == null || files.getFiles().size() > 0) {
+                    break;
+                }
+
+                backupFiles.addAll(files.getFiles());
+                String nextCursor = files.getNextCursor();
+                if (!StringUtils.isNullOrEmpty(nextCursor)) {
+                    request.setCursor(files.getNextCursor());
+                } else {
+                    break;
+                }
+            }
+
+            // 2. we can download "AppDataBackUpFileName" to restore local file
+            long size = mBackupFile.getSize();
+            Drive.Files.Get get = drive.files().get(mBackupFile.getId());
+            MediaHttpDownloader downloader = get.getMediaHttpDownloader();
+
+            boolean isDirectDownload = false;
+            if (size < DIRECT_DOWNLOAD_MAX_SIZE) {
+                isDirectDownload = true;
+            }
+            downloader.setContentRange(0, size - 1).setDirectDownloadEnabled(isDirectDownload);
+            String restoreFileName = "restoreFileName.jpg";
+            java.io.File f = new java.io.File("/sdcard/" + restoreFileName);
+            get.executeContentAndDownloadTo(new FileOutputStream(f));
+            sendHandleMessage(R.id.drive_restore_btn, SUCCESS);
+        } catch (IOException e) {
+            sendHandleMessage(R.id.drive_restore_btn, FAIL);
+            Logger.e(TAG, "RestoreData error: " + e.toString());
+        }
+    }
+
+    private void executeOnlineOpen() {
+        TaskManager.getInstance().execute(new OnlineOpenTask());
+    }
+
+    private class OnlineOpenTask extends DriveTask {
+        @Override
+        public void call() {
+            // 1. create folder
+            File dir = createDirectory();
+            // 2. upload a docx
+            Drive drive = buildDrive();
+            File temp = null;
+            String filePath = context.getExternalCacheDir().getAbsolutePath() + "/test.docx";
+            java.io.File io = new java.io.File(filePath);
+            FileContent fileContent = new FileContent(mimeType(io), io);
+            File content = new File().setFileName(io.getName()).setMimeType(mimeType(io)).setParentFolder(Collections.singletonList(dir.getId()));
+            try {
+                Drive.Files.Create rquest = drive.files().create(content, fileContent);
+                rquest.getMediaHttpUploader().setDirectUploadEnabled(true);
+                temp = rquest.execute();
+            } catch (IOException e) {
+                Logger.e(TAG, "upload file error: " + e.toString());
+                sendHandleMessage(R.id.drive_online_open_btn, FAIL);
+                return;
+            }
+            openOnlineFile(temp);
+        }
+    }
+
+    /**
+     * use webOffice to open **.docs
+     */
+    private void openOnlineFile(File file) {
+        String onlineViewLink = file.getOnLineViewLink();
+        if (TextUtils.isEmpty(onlineViewLink)) {
+            Logger.e(TAG, "File onLineViewLink is empty!");
+            sendHandleMessage(R.id.drive_online_open_btn, FAIL);
+            Toast.makeText(getActivity(), "open file error", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Intent intent = new Intent(getActivity(), WebViewActivity.class);
+        intent.putExtra("url", onlineViewLink);
+        Logger.d(TAG, "open file: " + file.getFileName() + " in WebView, url is " + onlineViewLink);
+        try {
+            startActivityForResult(intent, WEB_VIEW_BACK_REFRESH);
+        } catch (ActivityNotFoundException e) {
+            sendHandleMessage(R.id.drive_online_open_btn, FAIL);
+            Logger.e(TAG, "start WebViewActivity has ActivityNotFoundException.");
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == WEB_VIEW_BACK_REFRESH) {
+            sendHandleMessage(R.id.drive_online_open_btn, SUCCESS);
         }
     }
 }

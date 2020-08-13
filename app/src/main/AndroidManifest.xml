@@ -26,33 +26,9 @@
         tools:replace="android:allowBackup"
         android:uiOptions="splitActionBarWhenNarrow">
 
-        <!-- Access HMSSDK need to register AppID parameters. Value "${APPID}" is replaced
-            with the actual application APPID,derived from the Developer affiliate website
-            application. Format android:value= "appid=xxxxxx" -->
-        <meta-data
-            android:name="com.huawei.hms.client.appid"
-            android:value="appid=${APPID}" />
-
-        <!--
-            Subscription Capability Interface
-            The value of value "x.x.x" uses the version number of the integrated HSSDK, such as hmssdk-base:3.0.0.300 above.，
-            Here it corresponds android:value="3.0.0" -->
-        <meta-data
-            android:name="com.huawei.hms.version"
-            android:value="4.0.0" />
-
         <meta-data
             android:name="hwc-theme"
             android:value="androidhwext:style/Theme.Emui.NoActionBar" />
-
-        <!-- HMS upgrade provider -->
-        <!-- com.huawei.cloud.drive.hms.update.provider -->
-        <!-- com.huawei.drive.hidisk.hms.update.provider grey-->
-        <provider
-            android:name="com.huawei.hms.update.provider.UpdateProvider"
-            android:authorities="com.huawei.cloud.drive.hms.update.provider"
-            android:exported="false"
-            android:grantUriPermissions="true" />
 
         <activity android:name="com.huawei.cloud.drive.MainActivity"  android:screenOrientation="portrait">
         </activity>
@@ -68,6 +44,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
+        </activity>
+
+        <activity
+                android:name="com.huawei.cloud.drive.view.activity.WebViewActivity"
+                android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout"
+                android:exported="false"
+                android:windowSoftInputMode="stateAlwaysHidden">
+            <meta-data
+                    android:name="AppTheme"
+                    android:value="@style/Theme.AppCompat.NoActionBar" />
         </activity>
 
     </application>

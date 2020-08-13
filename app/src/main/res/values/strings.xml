@@ -69,4 +69,17 @@
     <string name="replies_get">replies.get</string>
     <string name="replies_update">replies.update</string>
     <string name="replies_delete">replies.delete</string>
+    <string name="historyversions_list">HistoryVersions.List</string>
+    <string name="historyversions_get">HistoryVersions.Get</string>
+    <string name="historyversions_update">HistoryVersions.Update</string>
+    <string name="historyversions_delete">HistoryVersions.Delete</string>
+    <string name="historyversions">HistoryVersions</string>
+    <string name="backup">AppDataBackUp</string>
+    <string name="databackup">DataBackUp</string>
+    <string name="restore">AppDataRestore</string>
+    <string name="datarestore">DataRestore</string>
+    <string name="onlineopen">OnlineOpen</string>
+    <string name="cloud_space_full" priority="translator">Cloud space is full, save failed, please upgrade cloud space first and try again</string>
+    <string name="menu_open_camera" priority="translator">Take photo</string>
+    <string name="menu_album" priority="translator">Select from Gallery</string>
 </resources>

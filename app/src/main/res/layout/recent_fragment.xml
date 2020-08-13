@@ -338,5 +338,121 @@
             android:layout_below="@id/drive_replies_update"
             android:text="@string/replies_delete"
             android:layout_marginBottom="9dp"/>
+
+        <TextView
+            android:id="@+id/drive_history_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/drive_replies_delete"
+            android:layout_marginTop="8dp"
+            android:text="@string/historyversions"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/drive_historyversions_list"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/hwbutton_emui_min_height"
+            android:gravity="start|center_vertical"
+            android:layout_marginTop="@dimen/margin_l"
+            style="@style/Widget.Emui.HwButton"
+            android:layout_below="@id/drive_history_version_text"
+            android:text="@string/historyversions_list" />
+
+        <Button
+            android:id="@+id/drive_historyversions_get"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/hwbutton_emui_min_height"
+            android:gravity="start|center_vertical"
+            android:layout_marginTop="@dimen/margin_l"
+            style="@style/Widget.Emui.HwButton"
+            android:layout_below="@id/drive_historyversions_list"
+            android:text="@string/historyversions_get" />
+
+        <Button
+            android:id="@+id/drive_historyversions_update"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/hwbutton_emui_min_height"
+            android:gravity="start|center_vertical"
+            android:layout_marginTop="@dimen/margin_l"
+            style="@style/Widget.Emui.HwButton"
+            android:layout_below="@id/drive_historyversions_get"
+            android:text="@string/historyversions_update" />
+
+        <Button
+            android:id="@+id/drive_historyversions_delete"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/hwbutton_emui_min_height"
+            android:gravity="start|center_vertical"
+            android:layout_marginTop="@dimen/margin_l"
+            style="@style/Widget.Emui.HwButton"
+            android:layout_below="@id/drive_historyversions_update"
+            android:text="@string/historyversions_delete"/>
+
+        <TextView
+                android:id="@+id/drive_backup_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drive_historyversions_delete"
+                android:layout_marginTop="8dp"
+                android:text="@string/backup"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        <Button
+                android:id="@+id/drive_backup_btn"
+                style="@style/Widget.Emui.HwButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/hwbutton_emui_min_height"
+                android:layout_below="@id/drive_backup_text"
+                android:layout_marginTop="16dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/databackup" />
+
+        <TextView
+                android:id="@+id/drive_restore_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drive_backup_btn"
+                android:layout_marginTop="8dp"
+                android:text="@string/restore"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        <Button
+                android:id="@+id/drive_restore_btn"
+                style="@style/Widget.Emui.HwButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/hwbutton_emui_min_height"
+                android:layout_below="@id/drive_restore_text"
+                android:layout_marginTop="16dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/datarestore" />
+
+        <TextView
+                android:id="@+id/drive_online_open_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/drive_restore_btn"
+                android:layout_marginTop="8dp"
+                android:text="@string/onlineopen"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        <Button
+                android:id="@+id/drive_online_open_btn"
+                style="@style/Widget.Emui.HwButton"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/hwbutton_emui_min_height"
+                android:layout_below="@id/drive_online_open_text"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="@dimen/margin_m"
+                android:gravity="start|center_vertical"
+                android:text="@string/onlineopen" />
+
     </RelativeLayout>
 </ScrollView>
