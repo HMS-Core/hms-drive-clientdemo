@@ -1928,7 +1928,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
                 return null;
             }
             try {
-                historyVersionList = drive.historyVersions().list(fileId).execute();
+                historyVersionList = drive.historyVersions().list(fileId).setFields("*").execute();
             } catch (Exception ex) {
                 Logger.e(TAG, "listHistoryVersions error: " + ex.toString());
             }
