@@ -53,12 +53,13 @@ English | [中文](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/
  Currently, the core capabilities of Drive Kit include uploading, downloading, deleting, trashing, and searching for files in Drive as well as querying and monitoring file changes. 
  1. Obtain parameters in the Main function of each Java file in advance. For example, obtain the AT through the HMS SDK.   
  2. Call the required APIs. Some APIs depend on each other, for example:    
-    Before calling FILES.CREAEFILE, you need to call FILES.CREATE.    
-    Before calling  FILES.GET,FILES.SUBSCRIBE,FILES.COPY,FILES.UPDATE,FILES.UPDATECONTENT,CHANGES.SUBSCRIBE,COMMENTS.CREATE,COMMENTS.LIST ,you need to call FILES.CREATE and FILES.CREATEFILE.    
-    Before calling CHANGES.LIST, you need to call CHANGES.GETSTARTCURSOR.    
-    Before calling CHANNELS.STOP, you need to call CHANGES.SUBSCRIBE.    
-    Before calling COMMENTS.GET, you need to call COMMENTS.CREATE.    
-    Before calling Replies.CREATE, you need to call COMMENTS.CREATE.    
+
+- Before calling `FILES.CREAEFILE`, you need to call `FILES.CREATE`.    
+- Before calling `FILES.GET,FILES.SUBSCRIBE,FILES.COPY,FILES.UPDATE,FILES.UPDATECONTENT,CHANGES.SUBSCRIBE,COMMENTS.CREATE,COMMENTS.LIST`, you need to call `FILES.CREATE and FILES.CREATEFILE`.    
+- Before calling `CHANGES.LIST`, you need to call `CHANGES.GETSTARTCURSOR`.    
+- Before calling `CHANNELS.STOP`, you need to call `CHANGES.SUBSCRIBE`.    
+- Before calling `COMMENTS.GET`, you need to call `COMMENTS.CREATE`.    
+- Before calling `Replies.CREATE`, you need to call `COMMENTS.CREATE`.    
 
 ## Question or issues
 If you want to evaluate more about HMS Core,
