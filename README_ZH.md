@@ -47,6 +47,7 @@
 ## 环境要求   
  推荐使用Java 1.8.211及以上版本。  
  推荐使用Android Studio 3.X及以上版本。
+ 
  您的应用应满足以下条件：
  minSdkVersion 24
  targetSdkVersion 29
