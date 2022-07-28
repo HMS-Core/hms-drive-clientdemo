@@ -44,9 +44,18 @@ English | [中文](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/
  applicationId: ID of the application registered on the HUAWEI Developer.   
  app_id: App ID, which is obtained from app information.
  
+ Devices to be tested: Huawei phones running EMUI 3.0 or later or non-Huawei phones running Android 8.1 or later.
+ If multiple HMS Core services are used at the same time, the maximum value of each Kit must be used.
+ 
 ## Supported Environments   
  Java 1.8 or a later version is recommended.  
  Android Studio 3.2 version or a later version is recommended.   
+ 
+ Your application should meet the following conditions:
+ minSdkVersion 24
+ targetSdkVersion 29
+ compileSdkVersion 29
+ Gradle 3.5.4 and later.
  
 ## Sample Code  
  
