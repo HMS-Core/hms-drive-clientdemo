@@ -40,10 +40,18 @@
  
  applicationId：在华为开发者联盟上注册的申请ID。  
  app_id：应用ID，从应用信息中获取。
+ 
+ 测试应用的设备：EMUI 3.0及以上的华为手机或Android 8.1 及以上的非华为手机。
+ 如果同时使用多个HMS Core的服务，则需要使用各个Kit对应的最大值。
 
 ## 环境要求   
- 推荐使用Java 1.8及以上版本。  
- 推荐使用Android Studio 3.2及以上版本。
+ 推荐使用Java 1.8.211及以上版本。  
+ 推荐使用Android Studio 3.X及以上版本。
+ 您的应用应满足以下条件：
+ minSdkVersion 24
+ targetSdkVersion 29
+ compileSdkVersion 29
+ Gradle 3.5.4及以上。
 
 ## 示例代码  
  目前，云空间服务的核心能力包括文件上传、下载、删除、丢弃和查询，以及文件变更的查询和监控。
