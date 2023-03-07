@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "your package name"
-        minSdkVersion 22
-        targetSdkVersion 26
+        minSdkVersion 27
+        targetSdkVersion 29
         versionCode 10000300
         versionName "1.0.0.300"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
