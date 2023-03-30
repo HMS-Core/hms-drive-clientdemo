@@ -73,7 +73,7 @@ import com.huawei.cloud.drive.hms.HmsProxyImpl;
 import com.huawei.cloud.drive.log.Logger;
 import com.huawei.cloud.drive.task.task.DriveTask;
 import com.huawei.cloud.drive.task.task.TaskManager;
-import com.huawei.hicloud.drive.R;
+import com.huawei.cloud.drive.R;
 import com.huawei.hms.utils.StringUtil;
 
 import org.json.JSONException;
