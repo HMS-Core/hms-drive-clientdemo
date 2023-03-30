@@ -45,7 +45,7 @@ import androidx.annotation.NonNull;
 import com.huawei.cloud.drive.hms.HmsProxyImpl;
 import com.huawei.cloud.drive.log.Logger;
 import com.huawei.cloud.drive.utils.ViewUtil;
-import com.huawei.hicloud.drive.R;
+import com.huawei.cloud.drive.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
