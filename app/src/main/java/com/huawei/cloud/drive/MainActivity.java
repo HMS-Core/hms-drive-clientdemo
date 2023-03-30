@@ -30,7 +30,7 @@ import com.huawei.cloud.drive.log.Logger;
 import com.huawei.cloud.drive.model.TabInfo;
 import com.huawei.cloud.drive.utils.ViewUtil;
 import com.huawei.cloud.drive.view.FileViewPager;
-import com.huawei.hicloud.drive.R;
+import com.huawei.cloud.drive.R;
 
 /**
  * Main Activity
