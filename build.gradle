@@ -4,7 +4,7 @@ buildscript {
     repositories {
         jcenter()
         // Integration of HMS Dependent MAVEN silos
-        maven {url 'http://developer.huawei.com/repo/'}
+        maven {url 'https://developer.huawei.com/repo/'}
         google()
     }
     dependencies {
@@ -19,7 +19,7 @@ allprojects {
     repositories {
         jcenter()
         // Integration of HMS Dependent MAVEN silos
-        maven {url 'http://developer.huawei.com/repo/'}
+        maven {url 'https://developer.huawei.com/repo/'}
         google()
     }
 }
