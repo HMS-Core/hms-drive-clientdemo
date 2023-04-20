@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "your package name"
-        minSdkVersion 27
+        minSdkVersion 29
         targetSdkVersion 29
         versionCode 10000300
         versionName "1.0.0.300"
@@ -50,7 +50,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 
-    implementation 'com.huawei.hms:drive:5.0.0.301'
+    implementation 'com.huawei.hms:drive:5.2.0.300'
     implementation 'com.huawei.hms:hwid:4.0.1.300'
     implementation 'com.huawei.hms:push:4.0.3.300'
 
