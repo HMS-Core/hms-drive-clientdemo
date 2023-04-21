@@ -24,7 +24,8 @@
         android:supportsRtl="true"
         android:theme="@android:style/Theme.Holo.Light"
         tools:replace="android:allowBackup"
-        android:uiOptions="splitActionBarWhenNarrow">
+        android:uiOptions="splitActionBarWhenNarrow"
+        android:requestLegacyExternalStorage="true">
 
         <meta-data
             android:name="hwc-theme"

@@ -48,7 +48,6 @@ import com.huawei.cloud.base.media.MediaHttpDownloaderProgressListener;
 import com.huawei.cloud.base.util.DateTime;
 import com.huawei.cloud.base.util.StringUtils;
 import com.huawei.cloud.base.util.base64.Base64;
-import com.huawei.cloud.client.util.CommonUtil;
 import com.huawei.cloud.drive.view.activity.WebViewActivity;
 import com.huawei.cloud.services.drive.Drive;
 import com.huawei.cloud.services.drive.model.About;
@@ -61,8 +60,6 @@ import com.huawei.cloud.services.drive.model.File;
 import com.huawei.cloud.services.drive.model.FileList;
 import com.huawei.cloud.services.drive.model.HistoryVersion;
 import com.huawei.cloud.services.drive.model.HistoryVersionList;
-import com.huawei.cloud.services.drive.model.Permission;
-import com.huawei.cloud.services.drive.model.PermissionList;
 import com.huawei.cloud.services.drive.model.Reply;
 import com.huawei.cloud.services.drive.model.ReplyList;
 import com.huawei.cloud.services.drive.model.StartCursor;
@@ -74,15 +71,9 @@ import com.huawei.cloud.drive.log.Logger;
 import com.huawei.cloud.drive.task.task.DriveTask;
 import com.huawei.cloud.drive.task.task.TaskManager;
 import com.huawei.cloud.drive.R;
-import com.huawei.hms.utils.StringUtil;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -278,7 +269,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             outputStream = new FileOutputStream(new java.io.File(cachePath + "/test.docx"));
             byte[] buf = new byte[1024];
             while ((byteCount = in.read(buf)) != -1) {
-                outputStream.write(buffer, 0, byteCount);
+                outputStream.write(buf, 0, byteCount);
             }
             outputStream.flush();
             outputStream.close();
@@ -304,7 +295,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             outputStream.close();
             in.close();
         } catch (IOException e) {
-            Logger.e(TAG, "prepare file error");
+            Logger.e(TAG, "prepare file error, exception: " + e.toString());
             return;
         }
     }
@@ -317,6 +308,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             updateButtonUi(msg.arg1, msg.what);
+            showErrorToast(msg);
         }
     };
 
@@ -422,6 +414,13 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
 
         Button onlineOpenButton = mView.findViewById(R.id.drive_online_open_btn);
         onlineOpenButton.setOnClickListener(this);
+    }
+
+    private void showErrorToast(Message msg) {
+        if (msg.what == SUCCESS || msg.obj == null) {
+            return;
+        }
+        Toast.makeText(getActivity(), msg.obj.toString(), Toast.LENGTH_LONG).show();
     }
 
     /**
@@ -540,16 +539,21 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         }
     }
 
+    private void sendHandleMessage(int buttonId, int result) {
+        sendHandleMessage(buttonId, result, null);
+    }
+
     /**
      * Update the button style based on the returned result
      *
      * @param buttonId button id
      * @param result Interface test result 0 success 1 failure
      */
-    private void sendHandleMessage(int buttonId, int result) {
+    private void sendHandleMessage(int buttonId, int result, String msg) {
         Message message = handler.obtainMessage();
         message.arg1 = buttonId;
         message.what = result;
+        message.obj = msg;
         handler.sendMessage(message);
     }
 
@@ -749,8 +753,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             byte[] thumbnailImageBuffer = getThumbnailImage(fileName);
             String type = mimeType(".jpg");
             if (mDirectory == null) {
-                Logger.e(TAG, "executeFilesCreateFile error, need to create Directory.");
-                sendHandleMessage(R.id.drive_files_button_createfile, FAIL);
+                String errMsg = "create file error: need to create directory first.";
+                Logger.e(TAG, errMsg);
+                sendHandleMessage(R.id.drive_files_button_createfile, FAIL, errMsg);
                 return;
             }
             createFile(fileName, mDirectory.getId(), thumbnailImageBuffer, type);
@@ -1155,9 +1160,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             //Object channel is used in other places.
             Logger.i(TAG, "channel: " + channel.toPrettyString());
             sendHandleMessage(R.id.drive_files_subscribe_button, SUCCESS);
-        } catch (Exception e) {
+        } catch (IOException e) {
             sendHandleMessage(R.id.drive_files_subscribe_button, FAIL);
-            Logger.e(TAG, "Exception" + e.getCause());
+            Logger.e(TAG, "executeFilesSubscribe error: " + e.toString());
         }
     }
 
@@ -1191,7 +1196,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             sendHandleMessage(R.id.drive_changes_getstartcursor_button, SUCCESS);
         } catch (Exception e) {
             sendHandleMessage(R.id.drive_changes_getstartcursor_button, FAIL);
-            Logger.e(TAG, "Exception" + e.getCause());
+            Logger.e(TAG, "executeChangesGetStartCursor error: " + e.toString());
         }
     }
 
@@ -1350,8 +1355,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             if (mComment != null && mFile != null) {
                 mReply = createReplies(mFile.getId(), mComment.getId());
             } else {
-                sendHandleMessage(R.id.drive_replies_create, FAIL);
-                Logger.e(TAG, "replies create error: args wrong");
+                String errMsg = "replies create error: need to create comments first.";
+                Logger.e(TAG, errMsg);
+                sendHandleMessage(R.id.drive_replies_create, FAIL, errMsg);
             }
         }
     }
@@ -1584,8 +1590,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             if (mFile != null) {
                 mComment = createComments(mFile.getId());
             } else {
-                sendHandleMessage(R.id.drive_comments_create, FAIL);
-                Logger.e(TAG, "comment create error: args wrong");
+                String errMsg = "comment create error: need to create file first.";
+                Logger.e(TAG, errMsg);
+                sendHandleMessage(R.id.drive_comments_create, FAIL, errMsg);
             }
         }
     }
@@ -1897,8 +1904,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             if (mFile != null) {
                 historyVersionList = listHistoryVersions(mFile.getId());
             } else {
-                Logger.e(TAG, "mFile is null.");
-                sendHandleMessage(R.id.drive_historyversions_list, FAIL);
+                String errMsg = "history versions list error: need to create file first.";
+                Logger.e(TAG, errMsg);
+                sendHandleMessage(R.id.drive_historyversions_list, FAIL, errMsg);
                 return;
             }
             if (historyVersionList != null) {
@@ -2033,8 +2041,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             if (mBackupFile != null) {
                 doRestoreData();
             } else {
-                Logger.e(TAG, "mBackUpFile is null");
-                sendHandleMessage(R.id.drive_backup_btn, FAIL);
+                String errMsg = "data restore error: need to date backup first.";
+                Logger.e(TAG, errMsg);
+                sendHandleMessage(R.id.drive_restore_btn, FAIL, errMsg);
             }
         }
     }
@@ -2096,16 +2105,17 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
         @Override
         public void call() {
             // 1. create folder
-            File dir = createDirectory();
+            mDirectory = createDirectory();
             // 2. upload a docx
             Drive drive = buildDrive();
             File temp = null;
             String filePath = context.getExternalCacheDir().getAbsolutePath() + "/test.docx";
             java.io.File io = new java.io.File(filePath);
             FileContent fileContent = new FileContent(mimeType(io), io);
-            File content = new File().setFileName(io.getName()).setMimeType(mimeType(io)).setParentFolder(Collections.singletonList(dir.getId()));
+            File content = new File().setFileName(io.getName()).setMimeType(mimeType(io)).setParentFolder(Collections.singletonList(mDirectory.getId()));
             try {
                 Drive.Files.Create rquest = drive.files().create(content, fileContent);
+                rquest.setFields("id,onLineViewLink");
                 rquest.getMediaHttpUploader().setDirectUploadEnabled(true);
                 temp = rquest.execute();
             } catch (IOException e) {
@@ -2123,9 +2133,9 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
     private void openOnlineFile(File file) {
         String onlineViewLink = file.getOnLineViewLink();
         if (TextUtils.isEmpty(onlineViewLink)) {
-            Logger.e(TAG, "File onLineViewLink is empty!");
-            sendHandleMessage(R.id.drive_online_open_btn, FAIL);
-            Toast.makeText(getActivity(), "open file error", Toast.LENGTH_LONG).show();
+            String errMsg = "open file error: link is empty!";
+            Logger.e(TAG, errMsg);
+            sendHandleMessage(R.id.drive_online_open_btn, FAIL, errMsg);
             return;
         }
         Intent intent = new Intent(getActivity(), WebViewActivity.class);
