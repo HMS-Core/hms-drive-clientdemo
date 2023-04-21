@@ -2041,7 +2041,7 @@ public class InterfaceFragment extends Fragment implements View.OnClickListener 
             if (mBackupFile != null) {
                 doRestoreData();
             } else {
-                String errMsg = "data restore error: need to date backup first.";
+                String errMsg = "data restore error: need to backup data first.";
                 Logger.e(TAG, errMsg);
                 sendHandleMessage(R.id.drive_restore_btn, FAIL, errMsg);
             }
