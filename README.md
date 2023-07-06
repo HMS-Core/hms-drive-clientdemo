@@ -24,7 +24,7 @@ English | [中文](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/
 
 ## Getting Started    
  For more development details, please refer to the following link:   
- https://developer.huawei.com/consumer/en/doc/development/HMS-Guides/drivekit-introduction   
+ https://developer.huawei.com/consumer/en/doc/development/HMSCore-Guides/introduction-0000001050039630   
 
  Before using HUAWEI Drive Kit SDK sample code, check whether the JAVA environment has been installed.    
  
@@ -52,9 +52,9 @@ English | [中文](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/
  Android Studio 3.2 version or a later version is recommended.   
  
  Your application should meet the following conditions:
- minSdkVersion 24
- targetSdkVersion 29
- compileSdkVersion 29
+ minSdkVersion 29 
+ targetSdkVersion 33 
+ compileSdkVersion 30 
  Gradle 3.5.4 and later.
  
 ## Sample Code  
