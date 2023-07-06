@@ -23,7 +23,7 @@
 
 ## 开发准备   
  更多开发详情，请参见如下链接：
- https://developer.huawei.com/consumer/en/doc/development/HMS-Guides/drivekit-introduction   
+ https://developer.huawei.com/consumer/cn/doc/development/HMSCore-Guides/introduction-0000001050039630   
 
  使用华为云空间服务SDK示例代码前，需检查Java环境是否已经安装。
  将示例代码复制到本地。
@@ -49,9 +49,9 @@
  推荐使用Android Studio 3.X及以上版本。
  
  您的应用应满足以下条件：
- minSdkVersion 24
- targetSdkVersion 29
- compileSdkVersion 29
+ minSdkVersion 29 
+ targetSdkVersion 33 
+ compileSdkVersion 30
  Gradle 3.5.4及以上。
 
 ## 示例代码  
