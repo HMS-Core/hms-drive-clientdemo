@@ -44,7 +44,7 @@ English | [中文](https://github.com/HMS-Core/hms-drive-clientdemo/blob/master/
  applicationId: ID of the application registered on the HUAWEI Developer.   
  app_id: App ID, which is obtained from app information.
  
- Devices to be tested: Huawei phones running EMUI 3.0 or later or non-Huawei phones running Android 8.1 or later.
+ Devices to be tested: Huawei phones running EMUI 10.0 or later or non-Huawei phones running Android 10.0 or later.
  If multiple HMS Core services are used at the same time, the maximum value of each Kit must be used.
  
 ## Supported Environments   
