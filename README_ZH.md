@@ -1,4 +1,4 @@
-# 华为云空间服务客户端示例代码
+![image](https://github.com/HMS-Core/hms-drive-clientdemo/assets/64996880/fa49d9cd-2f57-459f-b383-a45c7d971f31)# 华为云空间服务客户端示例代码
 
 [![License](https://img.shields.io/badge/Docs-hmsguides-brightgreen)](https://developer.huawei.com/consumer/cn/doc/development/HMS-Guides/drivekit-introduction)  ![Apache-2.0](https://img.shields.io/badge/license-Apache-blue)
   
@@ -41,7 +41,7 @@
  applicationId：在华为开发者联盟上注册的申请ID。  
  app_id：应用ID，从应用信息中获取。
  
- 测试应用的设备：EMUI 3.0及以上的华为手机或Android 8.1 及以上的非华为手机。
+ 测试应用的设备：EMUI 10.0及以上的华为手机或Android 10.0 及以上的非华为手机。
  如果同时使用多个HMS Core的服务，则需要使用各个Kit对应的最大值。
 
 ## 环境要求   
